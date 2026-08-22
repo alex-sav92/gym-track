@@ -3,7 +3,7 @@
   <header class="app-header">
 
     <div>
-      <h1>💪 GymTrack</h1>
+      <h1>💪 Gym Log</h1>
       <p>Your training. Your progress.</p>
     </div>
 
@@ -229,10 +229,10 @@
     @if (workout.exercises.length > 0) {
 
   <app-exercise-history
-    [exerciseId]="workout.exercises[0].exerciseId"
+    [exerciseId]="workout.exercises[exerciseIndex].exerciseId"
     [exerciseName]="
       getExerciseName(
-        workout.exercises[0].exerciseId
+        workout.exercises[exerciseIndex].exerciseId
       )
     ">
   </app-exercise-history>
@@ -251,8 +251,8 @@
         <thead>
           <tr>
             <th>Set</th>
-            <th>Weight</th>
             <th>Reps</th>
+            <th>Weight</th>
             <th>Notes</th>
             <th></th>
           </tr>
@@ -271,7 +271,13 @@
               <td>
                 {{ set.setNumber }}
               </td>
-
+              <td>
+                <input
+                  type="number"
+                  [(ngModel)]="set.reps"
+                  (ngModelChange)="updateComparison(workoutExercise)"
+                  min="0">
+              </td>
               <td>
                 <input
                   type="number"
@@ -279,14 +285,6 @@
                   (ngModelChange)="updateComparison(workoutExercise)"
                   min="0"
                   step="0.5">
-              </td>
-
-              <td>
-                <input
-                  type="number"
-                  [(ngModel)]="set.reps"
-                  (ngModelChange)="updateComparison(workoutExercise)"
-                  min="0">
               </td>
 
               <td>
