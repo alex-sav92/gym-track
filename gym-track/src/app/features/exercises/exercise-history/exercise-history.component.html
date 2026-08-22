@@ -1,0 +1,151 @@
+<section>
+
+  <h2>
+    {{ exerciseName }} — History
+  </h2>
+
+  @if (loading) {
+
+    <p>
+      Loading history...
+    </p>
+
+  } @else if (!summary || summary.sessions.length === 0) {
+
+    <p>
+      No history available for this exercise.
+    </p>
+
+  } @else {
+
+    <!-- SUMMARY -->
+
+    <div>
+
+      <h3>Overall progress</h3>
+
+      <p>
+        <strong>Best weight</strong><br>
+        {{ summary.bestWeight ?? '-' }} kg
+      </p>
+
+      <p>
+        <strong>Best reps</strong><br>
+        {{ summary.bestReps ?? '-' }}
+      </p>
+
+      <p>
+        <strong>Best session volume</strong><br>
+        {{ summary.bestVolume | number:'1.0-0' }} kg
+      </p>
+
+      <p>
+        <strong>Weight progression</strong><br>
+
+        {{ summary.firstRecordedWeight ?? '-' }}
+        kg
+        →
+
+        {{ summary.latestWeight ?? '-' }}
+        kg
+      </p>
+
+    </div>
+
+    <hr>
+
+    <hr>
+
+<h3>
+  Max weight
+</h3>
+
+<div>
+  <canvas #maxWeightCanvas></canvas>
+</div>
+
+<h3>
+  Training volume
+</h3>
+
+<div>
+  <canvas #volumeCanvas></canvas>
+</div>
+
+<hr>
+
+    <!-- SESSIONS -->
+
+    <h3>
+      Sessions
+    </h3>
+
+    <table>
+
+      <thead>
+
+        <tr>
+          <th>Date</th>
+          <th>Workout</th>
+          <th>Sets</th>
+          <th>Volume</th>
+          <th>Max weight</th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        @for (
+          session of summary.sessions;
+          track session.workoutId
+        ) {
+
+          <tr>
+
+            <td>
+              {{ session.workoutDate }}
+            </td>
+
+            <td>
+              {{ session.workoutName ?? '-' }}
+            </td>
+
+            <td>
+
+              @for (
+                set of session.sets;
+                track set.id
+              ) {
+
+                <div>
+                  {{ set.weight ?? '-' }}
+                  kg ×
+                  {{ set.reps ?? '-' }}
+                </div>
+
+              }
+
+            </td>
+
+            <td>
+              {{ getSessionVolume(session) | number:'1.0-0' }}
+              kg
+            </td>
+
+            <td>
+              {{ getSessionMaxWeight(session) ?? '-' }}
+              kg
+            </td>
+
+          </tr>
+
+        }
+
+      </tbody>
+
+    </table>
+
+  }
+
+</section>

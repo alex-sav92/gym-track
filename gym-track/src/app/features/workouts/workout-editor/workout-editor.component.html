@@ -1,0 +1,373 @@
+<div class="page">
+
+  <header class="app-header">
+
+    <div>
+      <h1>💪 GymTrack</h1>
+      <p>Your training. Your progress.</p>
+    </div>
+
+  </header>
+
+  <main class="content">
+<h2>Create Workout</h2>
+
+<div>
+  <label for="workoutDate">Date</label>
+
+  <input
+    id="workoutDate"
+    type="date"
+    [(ngModel)]="workout.workoutDate">
+</div>
+
+<div>
+  <label for="workoutName">Name</label>
+
+  <input
+    id="workoutName"
+    type="text"
+    [(ngModel)]="workout.name"
+    placeholder="e.g. Legs & Glutes">
+</div>
+
+<div>
+  <label for="workoutNotes">Notes</label>
+
+  <textarea
+    id="workoutNotes"
+    [(ngModel)]="workout.notes">
+  </textarea>
+</div>
+
+<hr>
+
+@if (loadingExercises) {
+
+  <p>Loading exercises...</p>
+
+} @else {
+
+  @for (
+    workoutExercise of workout.exercises;
+    track $index;
+    let exerciseIndex = $index
+  ) {
+
+    <!-- ========================================== -->
+    <!-- EXERCISE                                  -->
+    <!-- ========================================== -->
+
+    <section class="exercise-card">
+
+      <h3>
+        Exercise {{ exerciseIndex + 1 }}
+      </h3>
+
+      <select
+        [(ngModel)]="workoutExercise.exerciseId"
+        (ngModelChange)="onExerciseChanged(
+          workoutExercise,
+          $event
+        )">
+
+        @for (
+          exercise of exercises;
+          track exercise.id
+        ) {
+
+          <option [ngValue]="exercise.id">
+            {{ exercise.name }}
+
+            @if (exercise.muscle_group) {
+              — {{ exercise.muscle_group }}
+            }
+          </option>
+
+        }
+
+      </select>
+
+      <button
+        type="button"
+        (click)="removeExercise(exerciseIndex)">
+
+        Remove Exercise
+
+      </button>
+
+
+      <!-- ======================================== -->
+      <!-- PREVIOUS PERFORMANCE                    -->
+      <!-- ======================================== -->
+
+      <div class="previous-performance">
+
+        <h4>Previous Performance</h4>
+
+        @if (workoutExercise.loadingPreviousPerformance) {
+
+          <p>
+            Loading previous performance...
+          </p>
+
+        } @else {
+
+          @if (workoutExercise.previousPerformance) {
+
+            <p>
+              Date:
+              {{ workoutExercise.previousPerformance.workoutDate }}
+            </p>
+
+            <p>
+              Workout:
+              {{ workoutExercise.previousPerformance.workoutName }}
+            </p>
+
+            <ul>
+
+              @for (
+                set of workoutExercise.previousPerformance.sets;
+                track set.id
+              ) {
+
+                <li>
+                  {{ set.weight ?? '-' }}
+                  kg ×
+                  {{ set.reps ?? '-' }}
+                  reps
+                </li>
+
+              }
+
+            </ul>
+
+          } @else {
+
+            <p>
+              No previous performance recorded.
+            </p>
+
+          }
+
+        }
+
+      </div>
+
+      <!-- Comparison section -->
+
+      @if (
+  workoutExercise.comparison &&
+  workoutExercise.comparison.status !== 'no-history'
+) {
+
+  <div class="progress-feedback">
+
+    <h4>Progress</h4>
+
+    <p>
+      Volume:
+      {{ workoutExercise.comparison.previousVolume | number:'1.0-0' }}
+      kg
+      →
+      {{ workoutExercise.comparison.currentVolume | number:'1.0-0' }}
+      kg
+    </p>
+
+    <p>
+      Change:
+      {{ workoutExercise.comparison.volumePercentage | number:'1.0-1' }}%
+    </p>
+
+    <p>
+      Max weight:
+      {{ workoutExercise.comparison.previousMaxWeight ?? '-' }}
+      kg
+      →
+      {{ workoutExercise.comparison.currentMaxWeight ?? '-' }}
+      kg
+    </p>
+
+    <p>
+      Estimated 1RM:
+      {{ workoutExercise.comparison.estimatedPrevious1RM ?? '-' | number:'1.0-1' }}
+      kg
+      →
+      {{ workoutExercise.comparison.estimatedCurrent1RM ?? '-' | number:'1.0-1' }}
+      kg
+    </p>
+
+  </div>
+
+}
+
+      <!-- ------------------------>
+
+    <!--Feedback section-->
+    
+    @if (workoutExercise.feedback) {
+
+  <div class="progress-feedback">
+
+    <h4>
+      {{ workoutExercise.feedback.title }}
+    </h4>
+
+    <p>
+      {{ workoutExercise.feedback.message }}
+    </p>
+
+  </div>
+
+}
+    
+    <!--end of section-->
+
+    <!-- Exercise history   -->
+
+    @if (workout.exercises.length > 0) {
+
+  <app-exercise-history
+    [exerciseId]="workout.exercises[0].exerciseId"
+    [exerciseName]="
+      getExerciseName(
+        workout.exercises[0].exerciseId
+      )
+    ">
+  </app-exercise-history>
+
+}
+
+    <!-- end of section -->
+      <!-- ======================================== -->
+      <!-- CURRENT SETS                            -->
+      <!-- ======================================== -->
+
+      <h4>Today's Sets</h4>
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Set</th>
+            <th>Weight</th>
+            <th>Reps</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          @for (
+            set of workoutExercise.sets;
+            track $index;
+            let setIndex = $index
+          ) {
+
+            <tr>
+
+              <td>
+                {{ set.setNumber }}
+              </td>
+
+              <td>
+                <input
+                  type="number"
+                  [(ngModel)]="set.weight"
+                  (ngModelChange)="updateComparison(workoutExercise)"
+                  min="0"
+                  step="0.5">
+              </td>
+
+              <td>
+                <input
+                  type="number"
+                  [(ngModel)]="set.reps"
+                  (ngModelChange)="updateComparison(workoutExercise)"
+                  min="0">
+              </td>
+
+              <td>
+                <input
+                  type="text"
+                  [(ngModel)]="set.notes">
+              </td>
+
+              <td>
+
+                <button
+                  type="button"
+                  (click)="removeSet(
+                    workoutExercise,
+                    setIndex
+                  )">
+
+                  ×
+
+                </button>
+
+              </td>
+
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+      <button
+        type="button"
+        (click)="addSet(workoutExercise)">
+
+        + Add Set
+
+      </button>
+
+      <div>
+
+        <label>
+          Exercise notes
+        </label>
+
+        <textarea
+          [(ngModel)]="workoutExercise.notes">
+        </textarea>
+
+      </div>
+
+    </section>
+
+    <hr>
+
+  }
+
+  <button
+    type="button"
+    (click)="addExercise()">
+
+    + Add Exercise
+
+  </button>
+
+}
+
+<hr>
+
+<button
+  type="button"
+  (click)="saveWorkout()"
+  [disabled]="saving">
+
+  {{ saving ? 'Saving...' : 'Save Workout' }}
+
+</button>
+
+<p>
+  {{ message }}
+</p>
+  </main>
+
+</div>

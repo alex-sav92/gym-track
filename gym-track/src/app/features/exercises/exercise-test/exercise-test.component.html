@@ -1,0 +1,31 @@
+<h2>Exercises</h2>
+
+<p>Component loaded.</p>
+
+@if (loading) {
+  <p>Loading exercises...</p>
+}
+
+@if (error) {
+  <p style="color: red;">
+    Error: {{ error }}
+  </p>
+}
+
+@if (!loading && !error && exercises.length === 0) {
+  <p>No exercises found.</p>
+}
+
+@if (exercises.length > 0) {
+  <ul>
+    @for (exercise of exercises; track exercise.id) {
+      <li>
+        <strong>{{ exercise.name }}</strong>
+
+        @if (exercise.muscle_group) {
+          — {{ exercise.muscle_group }}
+        }
+      </li>
+    }
+  </ul>
+}
