@@ -52,7 +52,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: gym-track/dist/gym-track
+          path: gym-track/dist/gym-track/browser
 
   deploy:
     runs-on: ubuntu-latest
