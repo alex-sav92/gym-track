@@ -5,6 +5,8 @@ import { ExerciseHistory } from '../models/exercise-history.model';
 import { WorkoutSetForm } from '../../features/workouts/models/workout-set-form.model';
 import { ExerciseHistorySummary } from '../models/exercise-history-summary.model';
 import { ExerciseChartData } from '../models/exercise-chart-data.model';
+import { ExercisePR } from '../models/exercise-pr.model';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -504,5 +506,227 @@ createChartData(
     maxWeight,
     volume
   };
+}
+getPersonalRecords(
+  history: ExerciseHistory[],
+  currentSets: WorkoutSetForm[]
+): ExercisePR[] {
+
+  if (!currentSets.length) {
+    return [];
+  }
+
+  const currentMaxWeight =
+    this.getMaxWeight(currentSets);
+
+  const currentMaxReps =
+    this.getMaxReps(currentSets);
+
+  const currentVolume =
+    this.calculateVolume(currentSets);
+
+  const current1RM =
+    this.getEstimated1RM(currentSets);
+
+  const records: ExercisePR[] = [];
+
+  // -------------------------
+  // MAX WEIGHT
+  // -------------------------
+
+  if (currentMaxWeight !== null) {
+
+    const historicalWeights =
+      history.flatMap(session =>
+        session.sets
+          .map(set => set.weight)
+          .filter(
+            (weight): weight is number =>
+              weight !== null &&
+              weight > 0
+          )
+      );
+
+    const previousBest =
+      historicalWeights.length
+        ? Math.max(...historicalWeights)
+        : null;
+
+    if (
+      previousBest === null ||
+      currentMaxWeight > previousBest
+    ) {
+
+      records.push({
+        type: 'weight',
+        previousValue: previousBest,
+        currentValue: currentMaxWeight,
+        difference:
+          previousBest === null
+            ? null
+            : currentMaxWeight - previousBest,
+        percentage:
+          previousBest === null
+            ? null
+            : this.calculatePercentage(
+                previousBest,
+                currentMaxWeight
+              ),
+        message:
+          previousBest === null
+            ? `🏆 New personal record: ${currentMaxWeight} kg`
+            : `🏆 New personal record! Max weight increased from ${previousBest} kg to ${currentMaxWeight} kg.`
+      });
+    }
+  }
+
+  // -------------------------
+  // MAX REPS
+  // -------------------------
+
+  if (currentMaxReps !== null) {
+
+    const historicalReps =
+      history.flatMap(session =>
+        session.sets
+          .map(set => set.reps)
+          .filter(
+            (reps): reps is number =>
+              reps !== null &&
+              reps > 0
+          )
+      );
+
+    const previousBest =
+      historicalReps.length
+        ? Math.max(...historicalReps)
+        : null;
+
+    if (
+      previousBest === null ||
+      currentMaxReps > previousBest
+    ) {
+
+      records.push({
+        type: 'reps',
+        previousValue: previousBest,
+        currentValue: currentMaxReps,
+        difference:
+          previousBest === null
+            ? null
+            : currentMaxReps - previousBest,
+        percentage:
+          previousBest === null
+            ? null
+            : this.calculatePercentage(
+                previousBest,
+                currentMaxReps
+              ),
+        message:
+          previousBest === null
+            ? `🎉 New personal record: ${currentMaxReps} reps`
+            : `🎉 New personal record! Reps increased from ${previousBest} to ${currentMaxReps}.`
+      });
+    }
+  }
+
+  // -------------------------
+  // SESSION VOLUME
+  // -------------------------
+
+  if (currentVolume > 0) {
+
+    const historicalVolumes =
+      history.map(session =>
+        this.calculateHistoricalVolume(
+          session
+        )
+      );
+
+    const previousBest =
+      historicalVolumes.length
+        ? Math.max(...historicalVolumes)
+        : null;
+
+    if (
+      previousBest === null ||
+      currentVolume > previousBest
+    ) {
+
+      records.push({
+        type: 'volume',
+        previousValue: previousBest,
+        currentValue: currentVolume,
+        difference:
+          previousBest === null
+            ? null
+            : currentVolume - previousBest,
+        percentage:
+          previousBest === null
+            ? null
+            : this.calculatePercentage(
+                previousBest,
+                currentVolume
+              ),
+        message:
+          previousBest === null
+            ? `📈 New volume record: ${currentVolume} kg`
+            : `📈 New volume record! Session volume increased from ${previousBest} kg to ${currentVolume} kg.`
+      });
+    }
+  }
+
+  // -------------------------
+  // ESTIMATED 1RM
+  // -------------------------
+
+  if (current1RM !== null) {
+
+    const historical1RMs =
+      history
+        .map(session =>
+          this.getHistorical1RM(
+            session
+          )
+        )
+        .filter(
+          (value): value is number =>
+            value !== null
+        );
+
+    const previousBest =
+      historical1RMs.length
+        ? Math.max(...historical1RMs)
+        : null;
+
+    if (
+      previousBest === null ||
+      current1RM > previousBest
+    ) {
+
+      records.push({
+        type: 'estimated-1rm',
+        previousValue: previousBest,
+        currentValue: current1RM,
+        difference:
+          previousBest === null
+            ? null
+            : current1RM - previousBest,
+        percentage:
+          previousBest === null
+            ? null
+            : this.calculatePercentage(
+                previousBest,
+                current1RM
+              ),
+        message:
+          previousBest === null
+            ? `💪 New estimated 1RM: ${current1RM.toFixed(1)} kg`
+            : `💪 New estimated 1RM! Increased from ${previousBest.toFixed(1)} kg to ${current1RM.toFixed(1)} kg.`
+      });
+    }
+  }
+
+  return records;
 }
 }
