@@ -72,6 +72,10 @@ button {
   font-weight: 600;
 }
 
+.green {
+  background: #06af57;
+}
+
 button:hover:not(:disabled) {
   background: #4338ca;
 }
