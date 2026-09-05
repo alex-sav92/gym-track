@@ -26,6 +26,13 @@ getExerciseName(
   return this.exercises.find(
     exercise => exercise.id === exerciseId
   )?.name ?? '';
+};
+getExercise(
+  exerciseId: number
+): Exercise {
+  return this.exercises.find(
+    exercise => exercise.id === exerciseId
+  )!;
 }
 exercises: Exercise[] = [];
 
@@ -182,7 +189,8 @@ private async loadPreviousPerformance(
     workoutExercise.comparison =
       this.progressService.compare(
         history,
-        workoutExercise.sets
+        workoutExercise.sets,
+        this.getExercise(workoutExercise.exerciseId)
       );
     
     workoutExercise.feedback =
@@ -225,7 +233,8 @@ updateComparison(
   workoutExercise.comparison =
     this.progressService.compare(
       workoutExercise.previousPerformance,
-      workoutExercise.sets
+      workoutExercise.sets,
+      this.getExercise(workoutExercise.exerciseId)
     );
 
   workoutExercise.feedback =

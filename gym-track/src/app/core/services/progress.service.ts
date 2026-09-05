@@ -6,6 +6,7 @@ import { WorkoutSetForm } from '../../features/workouts/models/workout-set-form.
 import { ExerciseHistorySummary } from '../models/exercise-history-summary.model';
 import { ExerciseChartData } from '../models/exercise-chart-data.model';
 import { ExercisePR } from '../models/exercise-pr.model';
+import { Exercise } from '../models/exercise.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,138 +14,178 @@ import { ExercisePR } from '../models/exercise-pr.model';
 export class ProgressService {
 
   compare(
-    previous: ExerciseHistory | null,
-    currentSets: WorkoutSetForm[]
-  ): ExerciseComparison {
+  previous: ExerciseHistory | null,
+  currentSets: WorkoutSetForm[],
+  exercise: Exercise
+): ExerciseComparison {
 
-    if (!previous) {
-      return {
-        previousVolume: 0,
-        currentVolume: this.calculateVolume(currentSets),
-        volumeDifference: 0,
-        volumePercentage: 0,
+  const isAssistance = exercise.is_assistance;
 
-        previousMaxWeight: null,
-        currentMaxWeight: this.getMaxWeight(currentSets),
-        maxWeightDifference: null,
-        maxWeightPercentage: null,
-
-        previousMaxReps: null,
-        currentMaxReps: this.getMaxReps(currentSets),
-        maxRepsDifference: null,
-
-        estimatedPrevious1RM: null,
-        estimatedCurrent1RM: this.getEstimated1RM(currentSets),
-        estimated1RMDifference: null,
-        estimated1RMPercentage: null,
-
-        status: 'no-history'
-      };
-    }
-
-    const previousVolume =
-      this.calculateHistoricalVolume(previous);
-
-    const currentVolume =
-      this.calculateVolume(currentSets);
-
-    const previousMaxWeight =
-      this.getHistoricalMaxWeight(previous);
-
-    const currentMaxWeight =
-      this.getMaxWeight(currentSets);
-
-    const previousMaxReps =
-      this.getHistoricalMaxReps(previous);
-
-    const currentMaxReps =
-      this.getMaxReps(currentSets);
-
-    const estimatedPrevious1RM =
-      this.getHistorical1RM(previous);
-
-    const estimatedCurrent1RM =
-      this.getEstimated1RM(currentSets);
-
-    const volumeDifference =
-      currentVolume - previousVolume;
-
-    const volumePercentage =
-      this.calculatePercentage(
-        previousVolume,
-        currentVolume
-      );
-
-    const maxWeightDifference =
-      this.calculateDifference(
-        previousMaxWeight,
-        currentMaxWeight
-      );
-
-    const maxWeightPercentage =
-      this.calculatePercentage(
-        previousMaxWeight,
-        currentMaxWeight
-      );
-
-    const estimated1RMDifference =
-      this.calculateDifference(
-        estimatedPrevious1RM,
-        estimatedCurrent1RM
-      );
-
-    const estimated1RMPercentage =
-      this.calculatePercentage(
-        estimatedPrevious1RM,
-        estimatedCurrent1RM
-      );
-
+  if (!previous) {
     return {
-      previousVolume,
-      currentVolume,
-      volumeDifference,
-      volumePercentage,
+      previousVolume: 0,
+      currentVolume: this.calculateVolume(
+        currentSets,
+        isAssistance
+      ),
+      volumeDifference: 0,
+      volumePercentage: 0,
 
-      previousMaxWeight,
-      currentMaxWeight,
-      maxWeightDifference,
-      maxWeightPercentage,
+      previousMaxWeight: null,
+      currentMaxWeight: this.getMaxWeight(
+        currentSets,
+        isAssistance
+      ),
+      maxWeightDifference: null,
+      maxWeightPercentage: null,
 
-      previousMaxReps,
-      currentMaxReps,
-      maxRepsDifference:
-        this.calculateDifference(
-          previousMaxReps,
-          currentMaxReps
-        ),
+      previousMaxReps: null,
+      currentMaxReps: this.getMaxReps(currentSets),
+      maxRepsDifference: null,
 
-      estimatedPrevious1RM,
-      estimatedCurrent1RM,
-      estimated1RMDifference,
-      estimated1RMPercentage,
+      estimatedPrevious1RM: null,
+      estimatedCurrent1RM:
+        isAssistance
+          ? null
+          : this.getEstimated1RM(currentSets),
 
-      status: this.determineStatus(
-        volumePercentage,
-        estimated1RMPercentage
-      )
+      estimated1RMDifference: null,
+      estimated1RMPercentage: null,
+
+      status: 'no-history'
     };
   }
 
+  const previousVolume =
+    this.calculateHistoricalVolume(
+      previous,
+      isAssistance
+    );
+
+  const currentVolume =
+    this.calculateVolume(
+      currentSets,
+      isAssistance
+    );
+
+  const previousMaxWeight =
+    this.getHistoricalMaxWeight(
+      previous,
+      isAssistance
+    );
+
+  const currentMaxWeight =
+    this.getMaxWeight(
+      currentSets,
+      isAssistance
+    );
+
+  const previousMaxReps =
+    this.getHistoricalMaxReps(previous);
+
+  const currentMaxReps =
+    this.getMaxReps(currentSets);
+
+  const estimatedPrevious1RM =
+    isAssistance
+      ? null
+      : this.getHistorical1RM(previous);
+
+  const estimatedCurrent1RM =
+    isAssistance
+      ? null
+      : this.getEstimated1RM(currentSets);
+
+  const volumeDifference =
+    currentVolume - previousVolume;
+
+  const volumePercentage =
+    this.calculatePercentage(
+      previousVolume,
+      currentVolume
+    );
+
+  const maxWeightDifference =
+    this.calculateDifference(
+      previousMaxWeight,
+      currentMaxWeight
+    );
+
+  const maxWeightPercentage =
+    isAssistance
+      ? this.calculateAssistancePercentage(
+          previousMaxWeight,
+          currentMaxWeight
+        )
+      : this.calculatePercentage(
+          previousMaxWeight,
+          currentMaxWeight
+        );
+
+  const estimated1RMDifference =
+    this.calculateDifference(
+      estimatedPrevious1RM,
+      estimatedCurrent1RM
+    );
+
+  const estimated1RMPercentage =
+    this.calculatePercentage(
+      estimatedPrevious1RM,
+      estimatedCurrent1RM
+    );
+
+  return {
+    previousVolume,
+    currentVolume,
+    volumeDifference,
+    volumePercentage,
+
+    previousMaxWeight,
+    currentMaxWeight,
+    maxWeightDifference,
+    maxWeightPercentage,
+
+    previousMaxReps,
+    currentMaxReps,
+    maxRepsDifference:
+      this.calculateDifference(
+        previousMaxReps,
+        currentMaxReps
+      ),
+
+    estimatedPrevious1RM,
+    estimatedCurrent1RM,
+    estimated1RMDifference,
+    estimated1RMPercentage,
+
+    status: this.determineStatus(
+      volumePercentage,
+      maxWeightPercentage,
+      estimated1RMPercentage,
+      isAssistance
+    )
+  };
+}
+
   private calculateVolume(
-    sets: WorkoutSetForm[]
+    sets: WorkoutSetForm[],
+    isAssistance: boolean = false
   ): number {
 
     return sets.reduce(
-      (total, set) =>
-        total +
-        (set.weight ?? 0) *
-        (set.reps ?? 0),
-      0
-    );
+    (total, set) =>
+      total +
+      (isAssistance
+        ? Math.abs(set.weight ?? 0)
+        : (set.weight ?? 0)) *
+      (set.reps ?? 0),
+    0
+  );
   }
 
   private calculateHistoricalVolume(
-    history: ExerciseHistory
+    history: ExerciseHistory,
+    isAssistance: boolean = false
   ): number {
 
     return history.sets.reduce(
@@ -157,38 +198,48 @@ export class ProgressService {
   }
 
   private getMaxWeight(
-    sets: WorkoutSetForm[]
-  ): number | null {
+  sets: WorkoutSetForm[],
+  isAssistance: boolean = false
+): number | null {
 
-    const weights = sets
-      .map(set => set.weight)
-      .filter(
-        (weight): weight is number =>
-          weight !== null &&
-          weight > 0
-      );
+  const weights = sets
+    .map(set => set.weight)
+    .filter(
+      (weight): weight is number =>
+        weight !== null &&
+        (isAssistance
+          ? weight < 0
+          : weight > 0)
+    );
 
-    return weights.length
-      ? Math.max(...weights)
-      : null;
+  if (!weights.length) {
+    return null;
   }
 
-  private getHistoricalMaxWeight(
-    history: ExerciseHistory
-  ): number | null {
+  return isAssistance
+    ? Math.max(...weights)
+    : Math.max(...weights);
+}
 
-    const weights = history.sets
-      .map(set => set.weight)
-      .filter(
-        (weight): weight is number =>
-          weight !== null &&
-          weight > 0
-      );
+private getHistoricalMaxWeight(
+  history: ExerciseHistory,
+  isAssistance: boolean = false
+): number | null {
 
-    return weights.length
-      ? Math.max(...weights)
-      : null;
-  }
+  const weights = history.sets
+    .map(set => set.weight)
+    .filter(
+      (weight): weight is number =>
+        weight !== null &&
+        (isAssistance
+          ? weight < 0
+          : weight > 0)
+    );
+
+  return weights.length
+    ? Math.max(...weights)
+    : null;
+}
 
   private getMaxReps(
     sets: WorkoutSetForm[]
@@ -310,30 +361,32 @@ export class ProgressService {
 
   private determineStatus(
     volumePercentage: number,
-    oneRMPercentage: number
+    weightPercentage: number,
+    oneRMPercentage: number,
+    isAssistance: boolean
   ): 'improved' | 'declined' | 'similar' {
 
-    const improvement =
-      Math.max(
-        volumePercentage,
-        oneRMPercentage
-      );
+    const percentages = [
+  volumePercentage,
+  weightPercentage
+];
 
-    const decline =
-      Math.min(
-        volumePercentage,
-        oneRMPercentage
-      );
+if (!isAssistance) {
+  percentages.push(oneRMPercentage);
+}
 
-    if (improvement >= 5) {
-      return 'improved';
-    }
+const improvement = Math.max(...percentages);
+const decline = Math.min(...percentages);
 
-    if (decline <= -10) {
-      return 'declined';
-    }
+if (improvement >= 5) {
+  return 'improved';
+}
 
-    return 'similar';
+if (decline <= -10) {
+  return 'declined';
+}
+
+return 'similar';
   }
 
   createHistorySummary(
@@ -728,5 +781,27 @@ getPersonalRecords(
   }
 
   return records;
+}
+private calculateAssistancePercentage(
+  previous: number | null,
+  current: number | null
+): number {
+
+  if (
+    previous === null ||
+    current === null ||
+    previous === 0
+  ) {
+    return 0;
+  }
+
+  const previousAssistance = Math.abs(previous);
+  const currentAssistance = Math.abs(current);
+
+  return (
+    ((previousAssistance - currentAssistance) /
+      previousAssistance) *
+    100
+  );
 }
 }
