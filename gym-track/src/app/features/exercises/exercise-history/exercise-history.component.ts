@@ -7,8 +7,7 @@ import {
   ElementRef,
   OnDestroy
 } from '@angular/core';
-
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 
 import { ExerciseService }
   from '../../../core/services/exercise.service';
@@ -28,7 +27,7 @@ import { ExerciseHistory } from '../../../core/models/exercise-history.model';
   selector: 'app-exercise-history',
   standalone: true,
   imports: [
-    DecimalPipe
+    DecimalPipe, DatePipe
   ],
   templateUrl: './exercise-history.component.html'
 })

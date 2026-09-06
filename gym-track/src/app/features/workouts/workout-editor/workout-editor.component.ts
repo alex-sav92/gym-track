@@ -7,14 +7,13 @@ import { WorkoutExerciseForm } from '../models/workout-exercise-form.model';
 import { WorkoutSetForm } from '../models/workout-set-form.model';
 import { WorkoutForm } from '../models/workout-form.model';
 import { ProgressService } from '../../../core/services/progress.service';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, DatePipe } from '@angular/common';
 import { ProgressFeedbackService } from '../../../core/services/progress-feedback.service';
 import { ExerciseHistoryComponent } from '../../exercises/exercise-history/exercise-history.component';
-
 @Component({
   selector: 'app-workout-editor',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, ExerciseHistoryComponent],
+  imports: [FormsModule, DecimalPipe, DatePipe, ExerciseHistoryComponent],
   templateUrl: './workout-editor.component.html',
   styleUrl: './workout-editor.component.css'
 })
@@ -192,7 +191,7 @@ private async loadPreviousPerformance(
         workoutExercise.sets,
         this.getExercise(workoutExercise.exerciseId)
       );
-    
+
     workoutExercise.feedback =
       this.progressFeedbackService.generate(
         workoutExercise.comparison
