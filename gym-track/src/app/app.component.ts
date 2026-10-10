@@ -1,14 +1,20 @@
+
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { WorkoutEditorComponent } from './features/workouts/workout-editor/workout-editor.component';
+import {
+  RouterOutlet,
+  RouterLink,
+  RouterLinkActive
+} from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, WorkoutEditorComponent],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
-  title = 'gym-track';
-}
+export class AppComponent {}

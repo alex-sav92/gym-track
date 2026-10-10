@@ -103,4 +103,65 @@ export class WorkoutService {
 
     return workoutId;
   }
+  async getLatestWorkout(): Promise<any | null> {
+
+  const supabase = this.supabaseService.client;
+
+  const { data, error } = await supabase
+    .from('workouts')
+    .select(`
+      id,
+      workout_date,
+      name,
+      notes,
+      created_at,
+      workout_exercises (
+        id,
+        exercise_id,
+        exercise_order,
+        notes,
+        exercise:exercises (
+          id,
+          name,
+          muscle_group
+        ),
+        sets (
+          id,
+          set_number,
+          reps,
+          weight,
+          notes
+        )
+      )
+    `)
+    .order('workout_date', { ascending: false })
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error loading latest workout:', error);
+    throw error;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  // Sort exercises in the order they were performed.
+  data.workout_exercises.sort(
+    (a: any, b: any) =>
+      a.exercise_order - b.exercise_order
+  );
+
+  // Sort sets in numerical order.
+  for (const exercise of data.workout_exercises) {
+    exercise.sets.sort(
+      (a: any, b: any) =>
+        a.set_number - b.set_number
+    );
+  }
+
+  return data;
+}
 }
