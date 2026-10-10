@@ -35,7 +35,7 @@
       <div class="bg-gradient-to-r from-slate-900 to-slate-700 px-6 py-6 text-white">
 
         <h1 class="text-2xl sm:text-3xl font-bold mt-2">
-          {{ workout.name }} | {{ workout.workout_date | date:'EEEE, d MMMM y' }}
+          {{ workout.name }} - {{ workout.workout_date | date:'EEEE, d MMMM y' }}
         </h1>
       </div>
 
@@ -46,36 +46,10 @@
           </p>
         </div>
       }
-
-      <div class="grid grid-cols-2 divide-x divide-gray-100">
-        <div class="p-4 text-center">
-          <p class="text-2xl font-bold text-gray-900">
-            {{ workout.workout_exercises.length }}
-          </p>
-          <p class="text-xs uppercase tracking-wide text-gray-500 mt-1">
-            Exercises
-          </p>
-        </div>
-
-        <div class="p-4 text-center">
-          <p class="text-2xl font-bold text-gray-900">
-            {{ getTotalSets() }}
-          </p>
-          <p class="text-xs uppercase tracking-wide text-gray-500 mt-1">
-            Total sets
-          </p>
-        </div>
-      </div>
-
     </section>
 
     <!-- Exercises -->
     <div class="space-y-4">
-
-      <h2 class="text-lg font-bold text-gray-800">
-        Exercises
-      </h2>
-
       @for (
         exercise of workout.workout_exercises;
         track exercise.id;
@@ -85,20 +59,10 @@
         <section class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 
           <div class="flex items-start gap-3 px-5 py-4 border-b border-gray-100">
-            <div class="flex-shrink-0 w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
-              {{ i + 1 }}
-            </div>
-
             <div class="min-w-0">
               <h3 class="font-bold text-gray-900 text-lg">
-                {{ exercise.exercise?.name ?? 'Unknown exercise' }}
+                {{ i + 1 }}. {{ exercise.exercise?.name ?? 'Unknown exercise' }}
               </h3>
-
-              @if (exercise.exercise?.muscle_group) {
-                <p class="text-sm text-gray-500 mt-1">
-                  {{ exercise.exercise.muscle_group }}
-                </p>
-              }
             </div>
           </div>
 

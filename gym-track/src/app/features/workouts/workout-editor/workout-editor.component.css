@@ -107,3 +107,9 @@
     max-width: 100%;
   }
 }
+.red {
+  background-color: #d51d1d;
+}
+.red:hover {
+  background-color: #a50f0f;
+}

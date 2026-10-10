@@ -4,8 +4,6 @@
 <h2>Create Workout</h2>
 
 <div>
-  <label for="workoutDate">Date</label>
-
   <input
     id="workoutDate"
     type="date"
@@ -13,21 +11,18 @@
 </div>
 
 <div>
-  <label for="workoutName">Name</label>
-
   <input
     id="workoutName"
     type="text"
     [(ngModel)]="workout.name"
-    placeholder="e.g. Legs & Glutes">
+    placeholder="workout name">
 </div>
 
 <div>
-  <label for="workoutNotes">Notes</label>
-
   <textarea
     id="workoutNotes"
-    [(ngModel)]="workout.notes">
+    [(ngModel)]="workout.notes"
+     placeholder="workout notes">
   </textarea>
 </div>
 
@@ -80,7 +75,7 @@
       </select>
 
       <button
-        type="button"
+        type="button" class="red"
         (click)="removeExercise(exerciseIndex)">
 
         Remove Exercise
