@@ -230,6 +230,19 @@ volumeCanvas?: ElementRef<HTMLCanvasElement>;
       }
     );
 }
+expandedHistory: Set<number> = new Set();
+
+toggleHistory(exerciseId: number): void {
+  if (this.expandedHistory.has(exerciseId)) {
+    this.expandedHistory.delete(exerciseId);
+  } else {
+    this.expandedHistory.add(exerciseId);
+  }
+}
+
+isHistoryExpanded(exerciseId: number): boolean {
+  return this.expandedHistory.has(exerciseId);
+}
 ngOnDestroy(): void {
 
   this.maxWeightChart?.destroy();

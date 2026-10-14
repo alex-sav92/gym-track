@@ -1,20 +1,14 @@
 <section>
 
-  <h2>
-    {{ exerciseName }} — History
-  </h2>
+  <h2>{{ exerciseName }} — History</h2>
 
   @if (loading) {
 
-    <p>
-      Loading history...
-    </p>
+    <p>Loading history...</p>
 
   } @else if (!summary || summary.sessions.length === 0) {
 
-    <p>
-      No history available for this exercise.
-    </p>
+    <p>No history available for this exercise.</p>
 
   } @else {
 
@@ -54,19 +48,13 @@
 
     <hr>
 
-    <hr>
-
-<h3>
-  Max weight
-</h3>
+<h3>Max weight</h3>
 
 <div>
   <canvas #maxWeightCanvas></canvas>
 </div>
 
-<h3>
-  Training volume
-</h3>
+<h3>Training volume</h3>
 
 <div>
   <canvas #volumeCanvas></canvas>
@@ -75,9 +63,22 @@
 <hr>
     <!-- SESSIONS -->
     <h3>Sessions</h3>
-
+    <button type="button"
+  (click)="toggleHistory(exerciseId)"
+  class="w-full flex items-center justify-between gap-3
+         px-4 py-3 rounded-xl bg-slate-50
+         border border-slate-200 hover:bg-slate-100
+        transition-colors text-left"
+  > 
+  <span class="flex items-center gap-2 text-sm text-slate-500">
+    {{ isHistoryExpanded(exerciseId) ? 'Hide' : 'Show' }}
+    <span>
+      {{ isHistoryExpanded(exerciseId) ? '▲' : '▼' }}
+    </span>
+  </span></button>
+  @if (isHistoryExpanded(exerciseId)) {
     <table>
-      <thead>
+      <thead>     
         <tr>
           <th>Date</th>
           <th>Workout</th>
@@ -127,7 +128,7 @@
       </tbody>
 
     </table>
-
   }
+}
 
 </section>
