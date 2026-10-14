@@ -119,6 +119,25 @@ exercises: Exercise[] = [];
     });
   }
 
+  copyLastSet(exercise: WorkoutExerciseForm): void {
+    const lastSet = exercise.sets[exercise.sets.length - 1];
+
+    if (!lastSet) {
+      this.addSet(exercise);
+      return;
+    }
+
+    exercise.sets.push({
+      setNumber: exercise.sets.length + 1,
+      reps: lastSet.reps,
+      weight: lastSet.weight,
+      notes: lastSet.notes
+    });
+
+    this.updateComparison(exercise);
+  }
+
+
   private createSet(setNumber: number): WorkoutSetForm {
     return {
       setNumber,

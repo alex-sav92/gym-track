@@ -86,7 +86,7 @@
       <!-- PREVIOUS PERFORMANCE                    -->
       <!-- ======================================== -->
 
-      <div class="previous-performance">
+      <!-- <div class="previous-performance">
         <h4>Previous Performance</h4>
 
         @if (workoutExercise.loadingPreviousPerformance) {
@@ -124,7 +124,7 @@
 
         }
 
-      </div>
+      </div> -->
 
       <!-- Comparison section -->
 
@@ -133,7 +133,7 @@
   workoutExercise.comparison.status !== 'no-history'
 ) {
 
-  <div class="progress-feedback">
+  <!-- <div class="progress-feedback">
 
     <h4>Progress</h4>
 
@@ -169,7 +169,7 @@
       kg
     </p>
 
-  </div>
+  </div> -->
 
 }
 
@@ -267,6 +267,14 @@
         type="button"
         (click)="addSet(workoutExercise)">
         + Add Set
+      </button>
+      <button
+        type="button" 
+        (click)="copyLastSet(workoutExercise)"
+        class="px-3 py-2 rounded-lg bg-slate-100 text-slate-700
+              hover:bg-slate-200 border border-slate-200
+              transition-colors add-set">
+        Copy last
       </button>
       <div>
         @if (workoutExercise.feedback) {

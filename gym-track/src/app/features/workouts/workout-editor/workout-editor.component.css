@@ -113,3 +113,10 @@
 .red:hover {
   background-color: #a50f0f;
 }
+.add-set {
+  background-color: #8d14b5;
+  margin: 0 10px;
+}
+.add-set:hover {
+  background-color: #5d0f76;
+}
