@@ -163,5 +163,20 @@ export class WorkoutService {
   }
 
   return data;
-}
+  }
+
+  async getAllWorkouts(): Promise<any[]> {
+    const supabase = this.supabaseService.client;
+
+  const { data, error } = await supabase
+    .from('workouts')
+    .select('id, workout_date, name, notes')
+    .order('workout_date', { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return data ?? [];
+  }
 }
