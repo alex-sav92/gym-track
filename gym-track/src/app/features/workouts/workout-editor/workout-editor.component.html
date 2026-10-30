@@ -73,7 +73,7 @@
       </select>
 
       <button type="button" class="red" (click)="removeExercise(exerciseIndex)">
-        Remove Exercise
+        Remove
       </button>
 
       <!-- ======================================== -->
@@ -191,71 +191,85 @@
 
       <h4>Today's Sets</h4>
 
-      <table>
+      
+<div class="w-full min-w-0 overflow-hidden">
+  <table class="w-full table-fixed border-collapse">
+    <colgroup>
+      <col class="w-[10%] sm:w-[8%]">
+      <col class="w-[30%] sm:w-[18%]">
+      <col class="w-[45%] sm:w-[22%]">
+      <col class="hidden sm:table-column sm:w-[42%]">
+      <col class="w-[15%] sm:w-[10%]">
+    </colgroup>
 
-        <thead>
-          <tr>
-            <th>Set</th>
-            <th>Reps</th>
-            <th>Weight</th>
-            <th>Notes</th>
-            <th></th>
-          </tr>
-        </thead>
+    <thead>
+      <tr>
+        <th class="px-1 py-2 text-left text-xs">Set</th>
+        <th class="px-1 py-2 text-left text-xs">Reps</th>
+        <th class="px-1 py-2 text-left text-xs">Weight</th>
+        <th class="set-notes-column px-2 py-2 text-left text-xs">Notes</th>
+        <th></th>
+      </tr>
+    </thead>
 
-        <tbody>
+    <tbody>
+      @for (
+        set of workoutExercise.sets;
+        track $index;
+        let setIndex = $index
+      ) {
+        <tr>
+          <td class="px-1 py-2 text-sm">
+            {{ set.setNumber }}
+          </td>
 
-          @for (
-            set of workoutExercise.sets;
-            track $index;
-            let setIndex = $index
-          ) {
+          <td class="px-1 py-2">
+            <input
+              type="number"
+              [(ngModel)]="set.reps"
+              (ngModelChange)="updateComparison(workoutExercise)"
+              min="0"
+              style="width: 100%; min-width: 0; box-sizing: border-box;"
+              class="block max-w-full px-2 py-2 text-sm"
+            >
+          </td>
 
-            <tr>
-              <td>
-                {{ set.setNumber }}
-              </td>
-              <td>
-                <input
-                  type="number"
-                  [(ngModel)]="set.reps"
-                  (ngModelChange)="updateComparison(workoutExercise)"
-                  min="0">
-              </td>
-              <td>
-                <input
-                 type="number"
-                  step="0.5"
-                  min="0"
-                  [(ngModel)]="set.weight"
-                  (ngModelChange)="updateComparison(workoutExercise)">
-              </td>
+          <td class="px-1 py-2">
+            <input
+              type="number"
+              step="0.5"
+              min="0"
+              [(ngModel)]="set.weight"
+              (ngModelChange)="updateComparison(workoutExercise)"
+              style="width: 100%; min-width: 0; box-sizing: border-box;"
+              class="block max-w-full px-2 py-2 text-sm"
+            >
+          </td>
 
-              <td>
-                <input
-                  type="text"
-                  [(ngModel)]="set.notes">
-              </td>
+          <td class="set-notes-column px-2 py-2">
+            <input
+              type="text"
+              [(ngModel)]="set.notes"
+              style="width: 100%; min-width: 0; box-sizing: border-box;"
+              class="block max-w-full px-2 py-2 text-sm"
+            >
+          </td>
 
-              <td>
+          <td class="px-1 py-2 text-center">
+            <button
+              type="button"
+              (click)="removeSet(workoutExercise, setIndex)"
+              class="text-red-500 font-bold"
+            >
+              ×
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
 
-                <button
-                  type="button"
-                  (click)="removeSet(
-                    workoutExercise,
-                    setIndex
-                  )">×
-                </button>
-
-              </td>
-
-            </tr>
-
-          }
-
-        </tbody>
-
-      </table>
 
       <button
         type="button"

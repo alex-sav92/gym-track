@@ -120,3 +120,9 @@
 .add-set:hover {
   background-color: #5d0f76;
 }
+
+@media (max-width: 639px) {
+  .set-notes-column {
+    display: none !important;
+  }
+}
